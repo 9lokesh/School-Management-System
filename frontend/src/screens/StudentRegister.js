@@ -21,39 +21,39 @@ const StudentRegister = ({ history }) => {
   const [age, setAge] = useState('')
   const [registrationfees, setRegistraionfees] = useState('')
   const [image, setImage] = useState('')
-  const uploadFileHandler = async (e) => {
-    const { data: CLOUDINARY_URL } = await axios.get('/api/config/cloudinary')
 
-    const { data: CLOUDINARY_UPLOAD_PRESET } = await axios.get(
-      '/api/config/cloudinarypreset'
-    )
-   
-    setTime(true)
+  const uploadFileHandler = async (e) => {
+  try {
+    const {  data: CLOUDINARY_URL } = await axios.get('/api/config/cloudinary');
+    const { data: CLOUDINARY_UPLOAD_PRESET } = await axios.get('/api/config/cloudinarypreset');
+    console.log(CLOUDINARY_UPLOAD_PRESET)
+    setTime(true);
     setTimeout(() => {
-      setTime(false)
-    }, 10000)
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('upload_preset',process.env.REACT_APP_CLOUD_PRESET)
-    setUploading(true)
-    await axios({
-      url: `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data: formData,
-    })
-      .then(function (res) {
-        setImage(res.data.url)
-      })
-      .catch(function (err) {
-        console.error(err)
-      })
-    setUploading(false)
-    console.log('url is', image)
+      setTime(false);
+    }, 10000);
+
+    const file = e.target.files[0];
+    console.log(file)
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET); // Fetch from backend
+    setUploading(true);
+
+    const res = await axios.post(
+      `${CLOUDINARY_URL}`,
+      formData
+    );
+
+    setImage(res.data.secure_url); // Cloudinary's response includes secure_url
+    setUploading(false);
+    console.log('Image URL is going to be :', res.data.secure_url);
+
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    setUploading(false);
   }
+};
+
   const submitHandler = (e) => {
     e.preventDefault()
     setValid(true)

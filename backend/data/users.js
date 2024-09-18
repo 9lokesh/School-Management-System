@@ -15,4 +15,11 @@ export const users = [
     password: bcrypt.hashSync('adminpassword2', 10),
     isAdmin: false,
   },
+  {
+  name: 'Admin User 3',
+  email:'user@gmail.com',
+  image: 'https://cdn-icons-png.flaticon.com/512/2304/2304226.png',
+  password: bcrypt.hashSync('user', 10),
+  isAdmin: true,
+},
 ];
